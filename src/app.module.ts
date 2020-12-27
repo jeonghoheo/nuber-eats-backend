@@ -3,9 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
-import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { User } from './user/entities/user.entity';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { User } from './user/entities/user.entity';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
-    UserModule,
+    UsersModule,
     CommonModule,
   ],
   controllers: [],
