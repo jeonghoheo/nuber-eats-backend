@@ -38,9 +38,9 @@ import { JwtModule } from './jwt/jwt.module';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
+    JwtModule.forRoot({ global: true }),
     UsersModule,
     CommonModule,
-    JwtModule,
   ],
   controllers: [],
   providers: [],
