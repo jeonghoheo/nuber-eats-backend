@@ -13,12 +13,6 @@ import { UserService } from './users.service';
 @Resolver()
 export class UsersResolver {
   constructor(private readonly userService: UserService) {}
-
-  @Query(() => Boolean)
-  hi() {
-    return true;
-  }
-
   @Mutation(() => CreateAccountOutput)
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput,
