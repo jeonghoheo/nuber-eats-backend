@@ -60,7 +60,10 @@ export class UserService {
     return await this.users.findOne({ id });
   }
 
-  async editProfile(userId: number, editProfileInput: EditProfileInput) {
-    return this.users.update(userId, { ...editProfileInput });
+  async editProfile(userId: number, { email, password }: EditProfileInput) {
+    const user = await this.findById(userId);
+    user.email = email ?? user.email;
+    user.password = password ?? user.password;
+    return this.users.save(user);
   }
 }
