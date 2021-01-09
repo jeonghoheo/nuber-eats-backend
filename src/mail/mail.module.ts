@@ -1,8 +1,8 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { CONFIG_OPTIONS } from 'src/jwt/jwt.constants';
 import { MailModuleOptions } from './mail.interfaces';
 import { MailService } from './mail.service';
-
+@Global()
 @Module({})
 export class MailModule {
   static forRoot(options: MailModuleOptions): DynamicModule {
