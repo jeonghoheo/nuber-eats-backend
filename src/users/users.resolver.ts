@@ -45,10 +45,10 @@ export class UsersResolver {
   @UseGuards(AuthGuard)
   @Mutation(() => EditProfileOutput)
   editProfile(
-    @AuthUser() authUser: User,
+    @AuthUser() authUser: { ok: boolean; user: User },
     @Args('input') editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    return this.userService.editProfile(authUser.id, editProfileInput);
+    return this.userService.editProfile(authUser.user.id, editProfileInput);
   }
 
   @Mutation(() => VerifyEmailOutput)

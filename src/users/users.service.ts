@@ -99,10 +99,10 @@ export class UserService {
       const user = await this.users.findOne(userId);
       user.email = email ?? user.email;
       user.verified = false;
-
       const verification = await this.verifications.save(
         this.verifications.create({ user }),
       );
+
       this.mailService.sendVerificationEmail(user.email, verification.code);
       user.password = password ?? user.password;
       await this.users.save(user);
