@@ -29,11 +29,12 @@ describe('UserService', () => {
   let userRepository: MockRepository<User>;
 
   beforeAll(async () => {
+    const userRepositoryToken = getRepositoryToken(User);
     const module = await Test.createTestingModule({
       providers: [
         UserService,
         {
-          provide: getRepositoryToken(User),
+          provide: userRepositoryToken,
           useValue: mockRepository,
         },
         {
@@ -51,6 +52,7 @@ describe('UserService', () => {
       ],
     }).compile();
     service = module.get<UserService>(UserService);
+    userRepository = module.get(userRepositoryToken);
   });
 
   it('should be defiend', () => {
@@ -58,7 +60,23 @@ describe('UserService', () => {
   });
 
   describe('createAccount', () => {
-    it('should fail if user exists', () => {});
+    it('should fail if user exists', async () => {
+      userRepository.findOne.mockResolvedValue({
+        id: 1,
+        email: '',
+      });
+
+      const result = await service.createAccount({
+        email: '',
+        password: '',
+        role: 0,
+      });
+
+      expect(result).toMatchObject({
+        ok: false,
+        error: 'There is a user with that email already',
+      });
+    });
   });
   it.todo('login');
   it.todo('findById');
