@@ -7,11 +7,11 @@ import { User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { UserService } from './users.service';
 
-const mockRepository = {
+const mockRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
-};
+});
 
 const mockJwtService = {
   sign: jest.fn(),
@@ -35,11 +35,11 @@ describe('UserService', () => {
         UserService,
         {
           provide: userRepositoryToken,
-          useValue: mockRepository,
+          useValue: mockRepository(),
         },
         {
           provide: getRepositoryToken(Verification),
-          useValue: mockRepository,
+          useValue: mockRepository(),
         },
         {
           provide: JwtService,
@@ -60,22 +60,33 @@ describe('UserService', () => {
   });
 
   describe('createAccount', () => {
+    const createAccountArgs = {
+      email: '',
+      password: '',
+      role: 0,
+    };
     it('should fail if user exists', async () => {
       userRepository.findOne.mockResolvedValue({
         id: 1,
         email: '',
       });
 
-      const result = await service.createAccount({
-        email: '',
-        password: '',
-        role: 0,
-      });
+      const result = await service.createAccount(createAccountArgs);
 
       expect(result).toMatchObject({
         ok: false,
         error: 'There is a user with that email already',
       });
+    });
+
+    it('should create a user', async () => {
+      userRepository.findOne.mockResolvedValue(undefined);
+      userRepository.create.mockReturnValue(createAccountArgs);
+      await service.createAccount(createAccountArgs);
+      expect(userRepository.create).toHaveBeenCalledTimes(1);
+      expect(userRepository.create).toHaveBeenCalledWith(createAccountArgs);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledWith(createAccountArgs);
     });
   });
   it.todo('login');
