@@ -57,20 +57,26 @@ export class UserService {
       if (!user) {
         return {
           ok: false,
-          error: 'User not Found',
+          error: 'User not found',
         };
       }
       const passwordCorrect = await user.checkPassword(password);
+      if (!passwordCorrect) {
+        return {
+          ok: false,
+          error: 'Wrong password',
+        };
+      }
+
       const token = this.jwtService.sign(user.id);
       return {
         ok: passwordCorrect,
-        error: passwordCorrect ? null : 'Wrong Password',
-        token: passwordCorrect ? token : null,
+        token,
       };
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: "Can't log user in.",
       };
     }
   }
