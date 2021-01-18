@@ -104,14 +104,19 @@ export class UserService {
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOne(userId);
-      user.email = email ?? user.email;
-      user.verified = false;
-      const verification = await this.verifications.save(
-        this.verifications.create({ user }),
-      );
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        const verification = await this.verifications.save(
+          this.verifications.create({ user }),
+        );
 
-      this.mailService.sendVerificationEmail(user.email, verification.code);
-      user.password = password ?? user.password;
+        this.mailService.sendVerificationEmail(user.email, verification.code);
+      }
+      if (password) {
+        user.password = password;
+      }
+
       await this.users.save(user);
       return {
         ok: true,
