@@ -138,7 +138,7 @@ export class UserService {
       if (verification) {
         verification.user.verified = true;
         await this.users.save(verification.user);
-        await this.users.delete(verification.id);
+        await this.verifications.delete(verification.id);
       }
       return {
         ok: true,
@@ -146,7 +146,7 @@ export class UserService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: 'Could not verify email.',
       };
     }
   }
