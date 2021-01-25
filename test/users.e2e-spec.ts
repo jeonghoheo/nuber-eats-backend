@@ -4,6 +4,10 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { getConnection } from 'typeorm';
 
+jest.mock('got', () => ({
+  post: jest.fn(),
+}));
+
 const GRAPHQL_ENDPOINT = '/graphql';
 
 describe('AppController (e2e)', () => {
@@ -49,7 +53,31 @@ describe('AppController (e2e)', () => {
         });
     });
 
-    it.todo('should fail if account already exists');
+    it('should fail if account already exists', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+        mutation {
+          createAccount(input:{
+            email: "${EMAIL}"
+            password: "123123"
+            role: Owner
+          }) {
+            ok
+            error
+          }
+        }
+      `,
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data.createAccount.ok).toBeFalsy();
+          expect(res.body.data.createAccount.error).toBe(
+            'There is a user with that email already',
+          );
+        });
+    });
   });
   it.todo('me');
   it.todo('userProfile');
