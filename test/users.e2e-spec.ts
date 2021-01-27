@@ -9,6 +9,10 @@ jest.mock('got', () => ({
 }));
 
 const GRAPHQL_ENDPOINT = '/graphql';
+const testUser = {
+  email: 'choco@let.com',
+  password: '123123',
+};
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -28,7 +32,6 @@ describe('AppController (e2e)', () => {
   });
 
   describe('createAccount', () => {
-    const EMAIL = 'choco@let.com';
     it('should create account', () => {
       return request(app.getHttpServer())
         .post(GRAPHQL_ENDPOINT)
@@ -36,8 +39,8 @@ describe('AppController (e2e)', () => {
           query: `
           mutation {
             createAccount(input:{
-              email: "${EMAIL}"
-              password: "123123"
+              email: "${testUser.email}"
+              password: "${testUser.password}"
               role: Owner
             }) {
               ok
@@ -60,8 +63,8 @@ describe('AppController (e2e)', () => {
           query: `
         mutation {
           createAccount(input:{
-            email: "${EMAIL}"
-            password: "123123"
+            email: "${testUser.email}"
+            password: "${testUser.password}"
             role: Owner
           }) {
             ok
@@ -72,16 +75,68 @@ describe('AppController (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.createAccount.ok).toBeFalsy();
-          expect(res.body.data.createAccount.error).toBe(
-            'There is a user with that email already',
-          );
+          const { ok, error } = res.body.data.createAccount;
+          expect(ok).toBeFalsy();
+          expect(error).toBe('There is a user with that email already');
         });
     });
   });
+  describe('login', () => {
+    it('should login with correct credentials', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+        mutation {
+          login(input: {
+            email: "${testUser.email}",
+            password: "${testUser.password}"
+          }) {
+            ok
+            error
+            token
+          }
+        }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const { ok, error, token } = res.body.data.login;
+          expect(ok).toBeTruthy();
+          expect(error).toBeNull();
+          expect(token).toEqual(expect.any(String));
+        });
+    });
+
+    it('should not able to login with wrong credentials', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+      mutation {
+        login(input: {
+          email: "${testUser.email}",
+          password: "xxx"
+        }) {
+          ok
+          error
+          token
+        }
+      }
+      `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const { ok, error, token } = res.body.data.login;
+          expect(ok).toBeFalsy();
+          expect(error).toBe('Wrong password');
+          expect(token).toBeNull();
+        });
+    });
+  });
+
   it.todo('me');
   it.todo('userProfile');
-  it.todo('login');
   it.todo('editProfile');
   it.todo('verifyEmail');
 });
