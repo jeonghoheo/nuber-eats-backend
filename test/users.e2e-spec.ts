@@ -240,6 +240,50 @@ describe('AppController (e2e)', () => {
         });
     });
   });
-  it.todo('editProfile');
+  describe('editProfile', () => {
+    const NEW_EMAIL = 'choco@new.com';
+    it('should change email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+        mutation {
+          editProfile(input: {
+            email: "${NEW_EMAIL}"
+          }) {
+            ok
+            error
+          }
+        }
+        `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const { ok, error } = res.body.data.editProfile;
+          expect(ok).toBeTruthy();
+          expect(error).toBeNull();
+        });
+    });
+    it('should have a new email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', jwtToken)
+        .send({
+          query: `
+          {
+            me {
+              email
+            }
+          }
+          `,
+        })
+        .expect(200)
+        .expect((res) => {
+          const { email } = res.body.data.me;
+          expect(email).toBe(NEW_EMAIL);
+        });
+    });
+  });
   it.todo('verifyEmail');
 });
