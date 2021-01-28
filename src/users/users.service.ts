@@ -143,10 +143,12 @@ export class UserService {
         verification.user.verified = true;
         await this.users.save(verification.user);
         await this.verifications.delete(verification.id);
+        return {
+          ok: true,
+        };
+      } else {
+        throw new Error('');
       }
-      return {
-        ok: true,
-      };
     } catch (error) {
       return {
         ok: false,
