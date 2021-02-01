@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { User } from 'src/users/entities/user.entity';
 import {
   CreateRestaurantInput,
@@ -16,7 +17,7 @@ export class RestaurantResolver {
     return this.restaurantService.getAll();
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => CreateRestaurantOutput)
   async createRestaurant(
     @AuthUser() authUser: User,
     @Args('input') createRestaurantsInput: CreateRestaurantInput,
