@@ -57,6 +57,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     JwtModule.forRoot({ global: true, privateKey: process.env.PRIVATE_KEY }),
     UsersModule,
     RestaurantsModule,
+    AuthModule,
     MailModule.forRoot({
       apiKey: process.env.MAILGUN_API_KEY,
       domain: process.env.MAILGUN_DOMAIN_NAME,
