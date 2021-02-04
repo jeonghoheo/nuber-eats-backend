@@ -2,10 +2,10 @@
 
 The Backend of Nuber eats Clone
 
-- See Categories
-- See Restaurants by Category (pagination)
-- See Restaurants (pagination)
-- See Restaurant
+* See Categories
+* See Restaurants by Category (pagination)
+* See Restaurants (pagination)
+* See Restaurant
 
 - Edit Restaurant
 - Delete Restaurant
