@@ -7,7 +7,6 @@ The Backend of Nuber eats Clone
 * See Restaurants (pagination)
 * See Restaurant
 
-- Edit Restaurant
 - Delete Restaurant
 
 - Create Dish

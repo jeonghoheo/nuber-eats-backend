@@ -35,7 +35,7 @@ export class RestaurantsService {
       const newRestaurant = this.restaurants.create(createRestaurantsInput);
       newRestaurant.owner = owner;
       const category = await this.categories.getOrCreate(
-        createRestaurantsInput.name,
+        createRestaurantsInput.categoryName,
       );
       newRestaurant.category = category;
       await this.restaurants.save(newRestaurant);
