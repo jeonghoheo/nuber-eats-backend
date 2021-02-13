@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { number } from 'joi';
 import { CoreOutput } from './output.dto';
 
 @InputType()
@@ -11,4 +12,7 @@ export class PagenationInput {
 export class PagenationOutput extends CoreOutput {
   @Field((type) => Number, { nullable: true })
   totalPage?: number;
+
+  @Field((type) => Number, { nullable: true })
+  totalResults?: number;
 }

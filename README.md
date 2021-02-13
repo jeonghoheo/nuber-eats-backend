@@ -2,8 +2,7 @@
 
 The Backend of Nuber eats Clone
 
-- See Restaurants by Category (pagination)
-- See Restaurants (pagination)
+- Search Restaurant
 - See Restaurant
 
 * Create Dish

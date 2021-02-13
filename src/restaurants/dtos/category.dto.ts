@@ -4,6 +4,7 @@ import {
   PagenationOutput,
 } from 'src/common/dtos/pagenation.dto';
 import { Category } from '../entities/category.entity';
+import { Restaurant } from '../entities/restaurants.entity';
 
 @InputType()
 export class CategoryInput extends PagenationInput {
@@ -13,6 +14,9 @@ export class CategoryInput extends PagenationInput {
 
 @ObjectType()
 export class CategoryOutput extends PagenationOutput {
+  @Field((type) => [Restaurant], { nullable: true })
+  readonly restaurants?: Restaurant[];
+
   @Field((type) => Category, { nullable: true })
   readonly category?: Category;
 }
