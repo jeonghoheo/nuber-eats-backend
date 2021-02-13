@@ -4,6 +4,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -156,5 +157,30 @@ export class RestaurantsService {
 
   countRestaurant(category: Category): Promise<number> {
     return this.restaurants.count({ category });
+  }
+
+  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+    try {
+      const category = await this.categories.findOne(
+        { slug },
+        { relations: ['restaurants'] },
+      );
+      if (!category) {
+        return {
+          ok: false,
+          error: 'Could not found',
+        };
+      } else {
+        return {
+          ok: true,
+          category,
+        };
+      }
+    } catch {
+      return {
+        ok: true,
+        error: 'Could not load Category',
+      };
+    }
   }
 }
