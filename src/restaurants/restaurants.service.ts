@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
@@ -165,6 +165,13 @@ export class RestaurantsService {
     return this.restaurants.count({ category });
   }
 
+  calculatePage(page: number, offset: number = 25) {
+    return {
+      take: offset,
+      skip: (page - 1) * 25,
+    };
+  }
+
   async findCategoryBySlug({
     slug,
     page,
@@ -181,8 +188,7 @@ export class RestaurantsService {
           where: {
             category,
           },
-          take: 25,
-          skip: (page - 1) * 25,
+          ...this.calculatePage(page, 25),
         });
         const totalResults = await this.countRestaurant(category);
         return {
@@ -203,9 +209,8 @@ export class RestaurantsService {
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
-        skip: (page - 1) * 25,
-        take: 25,
         relations: ['category'],
+        ...this.calculatePage(page, 25),
       });
       return {
         ok: true,
@@ -225,7 +230,6 @@ export class RestaurantsService {
     restaurantId,
   }: RestaurantInput): Promise<RestaurantOutput> {
     try {
-      console.log(restaurantId, '@@');
       const restaurant = await this.restaurants.findOne(restaurantId);
       if (!restaurant) {
         return {
@@ -250,11 +254,18 @@ export class RestaurantsService {
     page,
   }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
     try {
-      const [restaurants, totalResult] = await this.restaurants.findAndCount({
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
         where: {
-          name: Like(`%${query}%`),
+          name: Raw((name) => `${name} ILIKE '%${query}%'`),
         },
+        ...this.calculatePage(page, 25),
       });
+      return {
+        ok: true,
+        restaurants,
+        totalResults,
+        totalPage: Math.ceil(totalResults / 25),
+      };
     } catch {
       return {
         ok: false,
